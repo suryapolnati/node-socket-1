@@ -5,7 +5,7 @@ let http = require("http").Server(app);
 
 const io = require("socket.io")(http, {
     cors: {
-        origin: "http://localhost:4200",
+        origin: "*",
         methods: ["GET", "POST"]
     }
 });
@@ -22,7 +22,6 @@ io.on("connection", function (socket) {
    
   
 });
-
 const server = http.listen(port, function () {
     console.log("listening on *:1337");
 });
