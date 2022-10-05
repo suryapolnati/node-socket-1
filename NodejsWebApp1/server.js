@@ -1,27 +1,15 @@
-const express = require('express');
-const app = express();
-const port = 1337;
-let http = require("http").Server(app);
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+const { createAdapter } = require("@socket.io/cluster-adapter");
+const { setupWorker } = require("@socket.io/sticky");
 
-const io = require("socket.io")(http, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
-    }
-});
+const httpServer = createServer();
+const io = new Server(httpServer);
 
-app.set("port",port);
-app.use(cors());
-app.use((req, res, next) => {
-    res.append('Access-Control-Allow-Origin', '*');
+io.adapter(createAdapter());
 
-    next();
-});
+setupWorker(io);
 
-io.on("connection", function (socket) {
-   
-  
-});
-const server = http.listen(port, function () {
-    console.log("listening on *:1337");
+io.on("connection", (socket) => {
+    console.log(`connect ${socket.id}`);
 });
