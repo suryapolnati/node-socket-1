@@ -1,38 +1,9 @@
-// JavaScript source code
-const http = require('http');
-const server = require('websocket').server;
+const { Server } = require("socket.io");
 
-const httpServer = http.createServer(() => {
+const io = new Server();
 
-});
-httpServer.listen(1337, () => {
-    console.log('Server listening at port 1337');
+io.on("connection", (socket) => {
+    io.emit('connected', 'client connected');
 });
 
-const wsServer = new server({
-    httpServer,
-
-});
-
-let clients = [];
-
-const peersByCode = {};
-
-wsServer.on('request', request => {
-    const connection = request.accept();
-    const id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-
-    connection.on('message', message => {
-        const { code } = JSON.parse(message.utf8Data);
-        if (!peersByCode[code]) {
-            peersByCode[code] = [{ connection, id }];
-        } else if (!peersByCode[code].find(peer => peer.id === id)) {
-            peersByCode[code].push({ connection, id });
-        }
-
-        const peer = peersByCode[code].find(peer => peer.id !== id)
-        if (peer) {
-            peer.connection.send(message.utf8Data);
-        }
-    });
-});
+io.listen(1337);
